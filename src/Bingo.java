@@ -9,25 +9,45 @@ public class Bingo extends JFrame implements ActionListener {
      * Set the following configuration variables
      */
 
-    final String ABSOLUTE_PATH_TO_DIR_IMG = "C:\\Users\\Usuario\\Desktop\\bingo\\bingo\\img";
-    final String IMAGE_NAME = "numerosBingo.jpg";
+    final String ABSOLUTE_PATH_TO_DIR_IMG = "C:\\DAW\\Programación\\Java2Evaluacion\\bingoVersion2\\img";
 
-    // Icono
-    final String IMAGE_PATH = ABSOLUTE_PATH_TO_DIR_IMG + "\\" + IMAGE_NAME;
-    ImageIcon icon = new ImageIcon(IMAGE_PATH);
-    JLabel iconLabel = new JLabel(icon);
+    // Imagen con números:
+    final String NUMBERS_IMAGE_NAME = "tableroNumeros.png";
+    final String NUMBERS_IMAGE_PATH = ABSOLUTE_PATH_TO_DIR_IMG + "\\" + NUMBERS_IMAGE_NAME;
+    ImageIcon numbersImage = new ImageIcon(NUMBERS_IMAGE_PATH);
+    JLabel numbersImageLabel = new JLabel(numbersImage);
+
+    // Imagen bingoIESVDA:
+    final String IMAGE_BINGO_IESVDA = "bingoIESVDA.png";
+    final String IMAGE_BINGO_IESVDA_PATH = ABSOLUTE_PATH_TO_DIR_IMG + "\\" + IMAGE_BINGO_IESVDA;
+    ImageIcon bingoIESVSAImage = new ImageIcon(IMAGE_BINGO_IESVDA_PATH);
+    JLabel bingoIESVSAImageContainer = new JLabel(bingoIESVSAImage);
+
+    // Imagen cartón vacío:
+    final String IMAGEN_CARTON_VACIO = "cartonBingoEnBlanco.png";
+    final String IMAGEN_CARTON_VACIO_PATH = ABSOLUTE_PATH_TO_DIR_IMG + "\\" + IMAGEN_CARTON_VACIO;
+    ImageIcon imagenCartonVacio = new ImageIcon(IMAGEN_CARTON_VACIO_PATH);
+    JLabel imagenCartonVacioContainer = new JLabel(imagenCartonVacio);
 
     JPanel jpanel = (JPanel) this.getContentPane();
-    JTextField bingoNumbers = new JTextField();
-    JLabel numbersLabel = new JLabel();
-    JButton button = new JButton("Vai bola");
-    JLabel bingoFinishedLabel = new JLabel();
-    JLabel[] imagesBallsArray = new JLabel[20];
+
+
+    // Botón sacar número:
+    JButton button = new JButton("Sacar número");
+
+    // Botón colocar números:
+    JButton botonColocar = new JButton("Colocar números");
+
+    // Botón restablecer:
+    JButton botonRestablecer = new JButton("Restablecer");
+
+    // Array de doble dimensión para guardar las bolas extraídas
+    JLabel[][] imagesBallsArray = new JLabel[3][9];
+
     int extractions = 1;
-    int ballImageXPosition = 25;
 
     public Bingo(){
-        setSize(900,900);
+        setSize(826,750);
         setTitle("Bingooooooooo !!!");
         setResizable(true);
         setLocation(250, 15);
@@ -47,31 +67,32 @@ public class Bingo extends JFrame implements ActionListener {
 
         Font font = new Font("Arial", Font.PLAIN, 24);
 
-        jpanel.add(iconLabel);
-        iconLabel.setBounds(50, 25, 762, 610);
+        // Imagen con los números
+        jpanel.add(numbersImageLabel);
+        numbersImageLabel.setBounds(477, 19, 300, 249);
 
-        numbersLabel.setText("Bolas extraídas: ");
-        numbersLabel.setBounds(100, 650, 200, 30);
-        numbersLabel.setFont(font);
-        jpanel.add(numbersLabel);
+        // Imagen bingoIESVDA:
+        jpanel.add(bingoIESVSAImageContainer);
+        bingoIESVSAImageContainer.setBounds(49, 13, 300, 249);
 
-        bingoNumbers.setBounds(new Rectangle(100, 690,675, 30));
-        bingoNumbers.setEditable(false);
-        bingoNumbers.setHorizontalAlignment(JTextField.CENTER);
-        bingoNumbers.setFont(font);
-        jpanel.add(bingoNumbers);
+        // Imagen cartón vacío:
+        jpanel.add(imagenCartonVacioContainer);
+        imagenCartonVacioContainer.setBounds(113, 260,600, 297);
 
+        // Botón sacar número:
         button.addActionListener(this);
-        button.setBounds(375, 740, 150, 100);
+        button.setBounds(105, 615, 200, 25);
         jpanel.add(button);
 
-        bingoFinishedLabel.setText("Bingo finalizado");
-        Font finishedLabelFont = new Font("Arial", Font.BOLD, 32);
-        bingoFinishedLabel.setFont(finishedLabelFont);
-        bingoFinishedLabel.setVisible(false);
-        bingoFinishedLabel.setForeground(Color.RED);
-        bingoFinishedLabel.setBounds(100, 750, 325, 40);
-        jpanel.add(bingoFinishedLabel);
+        // Botón colocar números:
+        botonColocar.addActionListener(this);
+        botonColocar.setBounds(315, 615, 200, 25);
+        jpanel.add(botonColocar);
+
+        // Botón restablecer:
+        botonRestablecer.addActionListener(this);
+        botonRestablecer.setBounds(525, 615, 200, 25);
+        jpanel.add(botonRestablecer);
 
     }
 
@@ -83,33 +104,64 @@ public class Bingo extends JFrame implements ActionListener {
     }
 
     private void turnBomb(){
-        System.out.println("extractions = " + extractions);
-        if(extractions > 19){
+
+        if(extractions > 14){
             button.setEnabled(false);
-            bingoFinishedLabel.setVisible(true);
         }
 
-        boolean repeated;
-        String actuallyBalls = bingoNumbers.getText();
-        int ball;
+        int min = 1;
+        int max = 10;
 
-        do {
-            ball = 1 + (int) (Math.random() * 90);
-            repeated = actuallyBalls.contains(String.valueOf(ball));
-        } while(repeated);
-        String ballStr = ball + ".png";
+        int columnaArrayBolas = 0;
 
-        // ball images
-        ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG+ballStr);
-        imagesBallsArray[extractions] = new JLabel(icon);
+        int ballImageXPosition = 0;
 
-        numbersLabel.setText("Bolas extraídas: ");
-        imagesBallsArray[extractions].setBounds(ballImageXPosition, 250, 55, 55);
-        jpanel.add(imagesBallsArray[extractions]);
-        ballImageXPosition += 58;
+        for(int i = 0; i < 9; i++){
+            //System.out.println("ballImageXPositionExt = " + ballImageXPosition);
+            ballImageXPosition = seleccionarBolas(min, max, columnaArrayBolas, ballImageXPosition);
+            min += 10;
+            max += 10;
+            ballImageXPosition += 55;
+            columnaArrayBolas++;
 
+        }
         ++extractions;
-        bingoNumbers.setText(actuallyBalls + " " + ball);
+    }
+
+    protected int seleccionarBolas (int min, int max, int columna, int ballImageXPosition) {
+
+        String actuallyBalls = "";
+        boolean repeated;
+        int ball;
+        int j = 0;
+        String ballStr;
+
+        if(columna == 3 || columna == 6 || columna == 8 ){
+            j = 1;
+        }
+
+        for(int i = j; i < 2; i++) {
+            do {
+                ball = min + (int) (Math.random() * (max - min + 1));
+                ballStr = ball + ".png";
+                repeated = actuallyBalls.contains(ballStr);
+            } while (repeated && ball >= min && ball <= max);
+
+            actuallyBalls += ballStr + " ";
+
+            ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
+            imagesBallsArray[i][columna] = new JLabel(icon);
+            imagesBallsArray[i][columna].setBounds(ballImageXPosition, 547, 55, 55);
+            System.out.println("imagesBallsArray[i][columna]" + imagesBallsArray[i][columna]);
+            jpanel.add(imagesBallsArray[i][columna]);
+            ballImageXPosition += 55;
+            //System.out.println("ballImageXPosition = " + ballImageXPosition);
+        }
+
+
+        //System.out.println("actuallyBalls = " + actuallyBalls);
+
+        return  ballImageXPosition;
 
     }
 
