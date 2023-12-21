@@ -118,7 +118,7 @@ public class Bingo extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==button){
 
-            if(extractions > 15){
+            if(extractions > 14){
                 button.setEnabled(false);
                 botonColocar.setEnabled(true);
             }
@@ -193,13 +193,11 @@ public class Bingo extends JFrame implements ActionListener {
                 ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
 
                 if(auxBall > ball ){
-                    imagesBallsArray[auxI][auxColumna] = new JLabel(icon);
-                    imagesBallsArray[auxI][auxColumna].setBounds(ballImageXPosition - 55, 563,55,55);
-                    imagesBallsInCartonArray[auxI][auxColumna] = new JLabel(icon);
-                    imagesBallsInCartonArray[auxI][auxColumna].setBounds(
-                            coordenadasBolasCarton[auxI][auxColumna][0]+113, coordenadasBolasCarton[auxI][auxColumna][1]+260,
-                            55, 55
-                    );
+                    imagesBallsArray[auxI][auxColumna].setIcon(icon);
+                    imagesBallsInCartonArray[auxI][auxColumna].setIcon(icon);
+
+                    icon = auxIcon;
+                    ball = auxBall;
 
                 }
                     auxI = i;
