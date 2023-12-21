@@ -1,7 +1,9 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class Bingo extends JFrame implements ActionListener {
 
@@ -9,7 +11,7 @@ public class Bingo extends JFrame implements ActionListener {
      * Set the following configuration variables
      */
 
-    final String ABSOLUTE_PATH_TO_DIR_IMG = "C:\\Users\\Usuario\\Desktop\\bingo2\\img";
+    final String ABSOLUTE_PATH_TO_DIR_IMG = "C:\\DAW\\Programación\\Java2Evaluacion\\bingoVersion2\\img";
 
     // Imagen con números:
     final String NUMBERS_IMAGE_NAME = "tableroNumeros.png";
@@ -31,7 +33,6 @@ public class Bingo extends JFrame implements ActionListener {
 
     JPanel jpanel = (JPanel) this.getContentPane();
 
-
     // Botón sacar número:
     JButton button = new JButton("Sacar número");
 
@@ -47,18 +48,25 @@ public class Bingo extends JFrame implements ActionListener {
     // Array de doble dimensión para presentar las bolas en el cartón:
     JLabel[][] imagesBallsInCartonArray = new JLabel[3][9];
     int[][][] coordenadasBolasCarton = {
-            {{26, 40}, {}, {149,40}, {}, {273,40}, {336, 40}, {}, {}, {522, 40}},
-            {{26, 122}, {87, 122},{}, {211, 122}, {}, {336, 122}, {}, {459, 122}, {}},
-            {{}, {87, 204}, {149, 204}, {}, {273, 204}, {}, {397,204}, {459,204}, {}}
+            {{26, 40}, {0,0}, {149,40}, {0,0}, {273,40}, {336, 40}, {0,0}, {0,0}, {522, 40}},
+            {{26, 122}, {87, 122},{0,0}, {211, 122}, {0,0}, {336, 122}, {0,0}, {459, 122}, {0,0}},
+            {{0,0}, {87, 204}, {149, 204}, {0,0}, {273, 204}, {0,0}, {397,204}, {459,204}, {0,0}}
     };
 
     int extractions = 1;
+    int auxI;
+    int auxColumna;
+    int auxBall;
 
     public Bingo(){
-        setSize(826,750);
+        setSize(842,750);
         setTitle("Bingooooooooo !!!");
         setResizable(true);
         setLocation(25, 25);
+
+        int[] num = coordenadasBolasCarton[0][1];
+
+        System.out.println(num);
 
         // Disposición nula para control total de panel
         jpanel.setLayout(null);
@@ -75,30 +83,32 @@ public class Bingo extends JFrame implements ActionListener {
     public void bingoPanelBuilder(){
 
         // Imagen con los números
-        numbersImageLabel.setBounds(477, 19, 300, 249);
+        numbersImageLabel.setBounds(477, 15, 298, 247);
         jpanel.add(numbersImageLabel);
 
         // Imagen bingoIESVDA:
-        bingoIESVSAImageContainer.setBounds(49, 13, 300, 249);
+        bingoIESVSAImageContainer.setBounds(49, 12, 300, 249);
         jpanel.add(bingoIESVSAImageContainer);
 
         // Imagen cartón vacío:
-        imagenCartonVacioContainer.setBounds(113, 260,600, 297);
+        imagenCartonVacioContainer.setBounds(113, 263,600, 297);
         jpanel.add(imagenCartonVacioContainer);
+        jpanel.setComponentZOrder(imagenCartonVacioContainer, 1);
 
         // Botón sacar número:
         button.addActionListener(this);
-        button.setBounds(105, 615, 200, 25);
+        button.setBounds(105, 622, 200, 25);
         jpanel.add(button);
 
         // Botón colocar números:
         botonColocar.addActionListener(this);
-        botonColocar.setBounds(315, 615, 200, 25);
+        botonColocar.setBounds(315, 622, 200, 25);
+        botonColocar.setEnabled(false);
         jpanel.add(botonColocar);
 
         // Botón restablecer:
         botonRestablecer.addActionListener(this);
-        botonRestablecer.setBounds(525, 615, 200, 25);
+        botonRestablecer.setBounds(525, 622, 200, 25);
         jpanel.add(botonRestablecer);
 
     }
@@ -106,15 +116,52 @@ public class Bingo extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==button){
-            turnBomb();
+
+            if(extractions > 15){
+                button.setEnabled(false);
+                botonColocar.setEnabled(true);
+            }
+
+            externalLoop:
+            for(int j = 0; j < 9; j++){
+                for(int i = 0; i < 3; i++){
+                    if(imagesBallsArray[i][j] != null){
+                        if(!imagesBallsArray[i][j].isVisible()) {
+                            imagesBallsArray[i][j].setVisible(true);
+                            extractions++;
+                            break externalLoop;
+                        } else {
+                            continue;
+                        }
+                    }
+
+                }
+            }
+
+        } else if (e.getSource()== botonColocar){
+
+            botonColocar.setEnabled(false);
+            for(int j = 0; j < 9; j++){
+                for(int i = 0; i < 3; i++){
+                    if(imagesBallsInCartonArray[i][j] != null){
+                        if(!imagesBallsInCartonArray[i][j].isVisible()) {
+                            imagesBallsInCartonArray[i][j].setVisible(true);
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+
+        } else if (e.getSource()== botonRestablecer){
+            dispose();
+            new Bingo();
         }
     }
 
     public void turnBomb(){
 
-        if(extractions > 14){
-            button.setEnabled(false);
-        }
+        System.out.println("extractions = " + extractions);
 
         int min = 1;
         int max = 10;
@@ -126,7 +173,6 @@ public class Bingo extends JFrame implements ActionListener {
             min += 10;
             max += 10;
             columnaArrayBolas++;
-
         }
         ++extractions;
     }
@@ -139,35 +185,69 @@ public class Bingo extends JFrame implements ActionListener {
         int j = 0;
         String ballStr;
 
-        if(columna == 3 || columna == 6 || columna == 8 ){
-            j = 1;
-        }
+        for(int i = j; i < 3; i++) {
+            if(coordenadasBolasCarton[i][columna][0] != 0 && coordenadasBolasCarton[i][columna][1] != 0) {
+                do {
+                    ball = min + (int) (Math.random() * (max - min + 1));
+                    ballStr = ball + ".png";
+                    repeated = actuallyBalls.contains(ballStr);
+                } while (repeated && ball >= min && ball <= max);
 
-        for(int i = j; i < 2; i++) {
-            do {
-                ball = min + (int) (Math.random() * (max - min + 1));
-                ballStr = ball + ".png";
-                repeated = actuallyBalls.contains(ballStr);
-            } while (repeated && ball >= min && ball <= max);
+                if(auxBall > ball ){
+                    imagesBallsArray[auxI][auxColumna].setBounds(ballImageXPosition, 563, 55, 55);
 
-            actuallyBalls += ballStr + " ";
+                    imagesBallsInCartonArray[auxI][auxColumna].setBounds(
+                            coordenadasBolasCarton[i][columna][0]+113, coordenadasBolasCarton[i][columna][1]+260,
+                            55, 55
+                    );
 
-            ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
+                    ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
 
-            /// Array de fila de bolas:
-            imagesBallsArray[i][columna] = new JLabel(icon);
-            imagesBallsArray[i][columna].setVisible(true);
-            imagesBallsArray[i][columna].setBounds(ballImageXPosition, 547, 55, 55);
-            jpanel.add(imagesBallsArray[i][columna]);
-            ballImageXPosition += 55;
+                    imagesBallsArray[i][columna] = new JLabel(icon);
+                    jpanel.add(imagesBallsArray[i][columna]);
+                    ballImageXPosition += 55;
+                    imagesBallsArray[i][columna].setVisible(false);
 
-            // Array de bolas en cartón:
-            imagesBallsInCartonArray[i][columna] = new JLabel(icon);
-            imagesBallsInCartonArray[i][columna].setVisible(true);
-            imagesBallsInCartonArray[i][columna].
-                    setBounds(coordenadasBolasCarton[i][columna][0], coordenadasBolasCarton[i][columna][1],
-                            //55, 55);
-            jpanel.add(imagesBallsInCartonArray[i][columna]);
+                    imagesBallsInCartonArray[i][columna] = new JLabel(icon);
+                    imagesBallsArray[i][columna].setBounds(ballImageXPosition -55, 563, 55, 55);
+                    imagesBallsInCartonArray[i][columna].setBounds(
+                            coordenadasBolasCarton[auxI][auxColumna][0]+113, coordenadasBolasCarton[auxI][auxColumna][1]+260,
+                            55, 55
+                    );
+
+                    jpanel.add(imagesBallsInCartonArray[i][columna]);
+                    jpanel.setComponentZOrder(imagesBallsInCartonArray[i][columna], 0);
+                    imagesBallsInCartonArray[i][columna].setVisible(false);
+                    break;
+                }
+
+                auxI = i;
+                auxColumna = columna;
+                auxBall = ball;
+
+
+                actuallyBalls += ballStr + " ";
+
+                ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
+
+                /// Array de fila de bolas:
+                imagesBallsArray[i][columna] = new JLabel(icon);
+                imagesBallsArray[i][columna].setBounds(ballImageXPosition, 563, 55, 55);
+                jpanel.add(imagesBallsArray[i][columna]);
+                ballImageXPosition += 55;
+                imagesBallsArray[i][columna].setVisible(false);
+
+                // Array de bolas en cartón:
+                imagesBallsInCartonArray[i][columna] = new JLabel(icon);
+                imagesBallsInCartonArray[i][columna].setBounds(
+                        coordenadasBolasCarton[i][columna][0]+113, coordenadasBolasCarton[i][columna][1]+260,
+                                55, 55
+                );
+
+                jpanel.add(imagesBallsInCartonArray[i][columna]);
+                jpanel.setComponentZOrder(imagesBallsInCartonArray[i][columna], 0);
+                imagesBallsInCartonArray[i][columna].setVisible(false);
+            }
         }
 
         return  ballImageXPosition;
