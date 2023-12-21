@@ -11,7 +11,7 @@ public class Bingo extends JFrame implements ActionListener {
      * Set the following configuration variables
      */
 
-    final String ABSOLUTE_PATH_TO_DIR_IMG = "C:\\DAW\\Programación\\Java2Evaluacion\\bingoVersion2\\img";
+    final String ABSOLUTE_PATH_TO_DIR_IMG = "C:\\Users\\Usuario\\Desktop\\bingo2\\img";
 
     // Imagen con números:
     final String NUMBERS_IMAGE_NAME = "tableroNumeros.png";
@@ -57,6 +57,7 @@ public class Bingo extends JFrame implements ActionListener {
     int auxI;
     int auxColumna;
     int auxBall;
+    ImageIcon auxIcon;
 
     public Bingo(){
         setSize(842,750);
@@ -130,8 +131,6 @@ public class Bingo extends JFrame implements ActionListener {
                             imagesBallsArray[i][j].setVisible(true);
                             extractions++;
                             break externalLoop;
-                        } else {
-                            continue;
                         }
                     }
 
@@ -161,8 +160,6 @@ public class Bingo extends JFrame implements ActionListener {
 
     public void turnBomb(){
 
-        System.out.println("extractions = " + extractions);
-
         int min = 1;
         int max = 10;
         int columnaArrayBolas = 0;
@@ -174,7 +171,7 @@ public class Bingo extends JFrame implements ActionListener {
             max += 10;
             columnaArrayBolas++;
         }
-        ++extractions;
+
     }
 
     public int seleccionarBolas (int min, int max, int columna, int ballImageXPosition) {
@@ -193,60 +190,43 @@ public class Bingo extends JFrame implements ActionListener {
                     repeated = actuallyBalls.contains(ballStr);
                 } while (repeated && ball >= min && ball <= max);
 
-                if(auxBall > ball ){
-                    imagesBallsArray[auxI][auxColumna].setBounds(ballImageXPosition, 563, 55, 55);
+                ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
 
+                if(auxBall > ball ){
+                    imagesBallsArray[auxI][auxColumna] = new JLabel(icon);
+                    imagesBallsArray[auxI][auxColumna].setBounds(ballImageXPosition - 55, 563,55,55);
+                    imagesBallsInCartonArray[auxI][auxColumna] = new JLabel(icon);
                     imagesBallsInCartonArray[auxI][auxColumna].setBounds(
-                            coordenadasBolasCarton[i][columna][0]+113, coordenadasBolasCarton[i][columna][1]+260,
+                            coordenadasBolasCarton[auxI][auxColumna][0]+113, coordenadasBolasCarton[auxI][auxColumna][1]+260,
                             55, 55
                     );
 
-                    ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
+                }
+                    auxI = i;
+                    auxColumna = columna;
+                    auxBall = ball;
+                    auxIcon = icon;
 
+                    actuallyBalls += ballStr + " ";
+
+                    /// Array de fila de bolas:
                     imagesBallsArray[i][columna] = new JLabel(icon);
+                    imagesBallsArray[i][columna].setBounds(ballImageXPosition, 563, 55, 55);
                     jpanel.add(imagesBallsArray[i][columna]);
                     ballImageXPosition += 55;
                     imagesBallsArray[i][columna].setVisible(false);
 
+                    // Array de bolas en cartón:
                     imagesBallsInCartonArray[i][columna] = new JLabel(icon);
-                    imagesBallsArray[i][columna].setBounds(ballImageXPosition -55, 563, 55, 55);
                     imagesBallsInCartonArray[i][columna].setBounds(
-                            coordenadasBolasCarton[auxI][auxColumna][0]+113, coordenadasBolasCarton[auxI][auxColumna][1]+260,
+                            coordenadasBolasCarton[i][columna][0]+113, coordenadasBolasCarton[i][columna][1]+260,
                             55, 55
                     );
 
                     jpanel.add(imagesBallsInCartonArray[i][columna]);
                     jpanel.setComponentZOrder(imagesBallsInCartonArray[i][columna], 0);
                     imagesBallsInCartonArray[i][columna].setVisible(false);
-                    break;
-                }
 
-                auxI = i;
-                auxColumna = columna;
-                auxBall = ball;
-
-
-                actuallyBalls += ballStr + " ";
-
-                ImageIcon icon = new ImageIcon(ABSOLUTE_PATH_TO_DIR_IMG + "\\" + ballStr);
-
-                /// Array de fila de bolas:
-                imagesBallsArray[i][columna] = new JLabel(icon);
-                imagesBallsArray[i][columna].setBounds(ballImageXPosition, 563, 55, 55);
-                jpanel.add(imagesBallsArray[i][columna]);
-                ballImageXPosition += 55;
-                imagesBallsArray[i][columna].setVisible(false);
-
-                // Array de bolas en cartón:
-                imagesBallsInCartonArray[i][columna] = new JLabel(icon);
-                imagesBallsInCartonArray[i][columna].setBounds(
-                        coordenadasBolasCarton[i][columna][0]+113, coordenadasBolasCarton[i][columna][1]+260,
-                                55, 55
-                );
-
-                jpanel.add(imagesBallsInCartonArray[i][columna]);
-                jpanel.setComponentZOrder(imagesBallsInCartonArray[i][columna], 0);
-                imagesBallsInCartonArray[i][columna].setVisible(false);
             }
         }
 
